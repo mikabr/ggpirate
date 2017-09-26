@@ -67,7 +67,18 @@ GeomViolinBkg <- ggproto(
 
 #' Pirate plots
 #'
+#' A pirate plot
+#' (\url{https://cran.r-project.org/web/packages/yarrr/vignettes/pirateplot.html})
+#' is a way of displaying data where a continuous dependent variable is a
+#' function of a categorical independent variable, in a more informative way
+#' than the traditional barplot. \code{geom_pirate} plots the raw data as
+#' points, along with layers showing descriptive statistics -- horizontal line
+#' segments indicating the mean and violin plots indicating density.
+#'
 #' @export
+#'
+#' @seealso \code{\link{geom_violin}}
+#' @seealso \code{\link{geom_col}}
 #' @inheritParams ggplot2::layer
 #' @inheritParams ggplot2::geom_col
 #' @inheritParams ggplot2::geom_violin

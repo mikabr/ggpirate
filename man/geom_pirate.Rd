@@ -59,9 +59,20 @@ that define both data and aesthetics and shouldn't inherit behaviour from
 the default plot specification, e.g. \code{\link{borders}}.}
 }
 \description{
-Pirate plots
+A pirate plot
+(\url{https://cran.r-project.org/web/packages/yarrr/vignettes/pirateplot.html})
+is a way of displaying data where a continuous dependent variable is a
+function of a categorical independent variable, in a more informative way
+than the traditional barplot. \code{geom_pirate} plots the raw data as
+points, along with layers showing descriptive statistics -- horizontal line
+segments indicating the mean and violin plots indicating density.
 }
 \examples{
 ggplot(mpg, aes(x = class, y = displ)) +
   geom_pirate(aes(colour = class, fill = class))
+}
+\seealso{
+\code{\link{geom_violin}}
+
+\code{\link{geom_col}}
 }
