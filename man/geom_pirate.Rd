@@ -4,9 +4,11 @@
 \alias{geom_pirate}
 \title{Pirate plots}
 \usage{
-geom_pirate(mapping = NULL, data = NULL, ..., trim = TRUE,
-  scale = "area", fatten = 2.5, width = 0.9, na.rm = FALSE,
-  show.legend = NA, inherit.aes = TRUE)
+geom_pirate(mapping = NULL, data = NULL, ..., points = TRUE,
+  bars = TRUE, lines = TRUE, violins = TRUE, point_width = 0.1,
+  bar_width = 0.9, line_width = 0.9, violin_width = 0.8, trim = TRUE,
+  scale = "area", fatten = 2.5, na.rm = FALSE, show.legend = NA,
+  inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by \code{\link{aes}} or
@@ -33,6 +35,26 @@ often aesthetics, used to set an aesthetic to a fixed value, like
 \code{color = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
 
+\item{points}{logical indicating whether to show points}
+
+\item{bars}{logical indicating whether to show mean bars}
+
+\item{lines}{logical indicating whether to show mean lines}
+
+\item{violins}{logical indicating whether to show violins}
+
+\item{point_width}{Amount of horizontal jitter added to the locations of the
+points. Defaults to 10\% of the resolution of the data.}
+
+\item{bar_width}{Width of mean bars. Defaults to 90\% of the resolution of
+the data.}
+
+\item{line_width}{Width of mean lines. Defaults to 90\% of the resolution of
+the data.}
+
+\item{violin_width}{Width of violins. Defaults to 80\% of the resolution of
+the data.}
+
 \item{trim}{If \code{TRUE} (default), trim the tails of the violins
 to the range of the data. If \code{FALSE}, don't trim the tails.}
 
@@ -40,11 +62,8 @@ to the range of the data. If \code{FALSE}, don't trim the tails.}
 the tails). If "count", areas are scaled proportionally to the number of
 observations. If "width", all violins have the same maximum width.}
 
-\item{fatten}{A multiplicative factor used to increase the size of the
-middle bar in \code{geom_crossbar()} and the middle point in
-\code{geom_pointrange()}.}
-
-\item{width}{Bar width. By default, set to 90\% of the resolution of the data.}
+\item{fatten}{A multiplicative factor used to increase the size of the mean
+lines.}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
@@ -63,16 +82,17 @@ A pirate plot
 (\url{https://cran.r-project.org/web/packages/yarrr/vignettes/pirateplot.html})
 is a way of displaying data where a continuous dependent variable is a
 function of a categorical independent variable, in a more informative way
-than the traditional barplot. \code{geom_pirate} plots the raw data as
-points, along with layers showing descriptive statistics -- horizontal line
-segments indicating the mean and violin plots indicating density.
+than the traditional barplot. \code{geom_pirate} plots the raw data as points
+(using \link[ggplot2]{geom_jitter}), along with layers showing descriptive
+statistics -- horizontal lines indicating means (using
+\link[ggplot2]{geom_crossbar}), bars indicating means (using
+\link[ggplot2]{geom_col}) and violins indicating the density (using
+\link[ggplot2]{geom_violin}).
 }
 \examples{
 ggplot(mpg, aes(x = class, y = displ)) +
-  geom_pirate(aes(colour = class, fill = class))
-}
-\seealso{
-\code{\link{geom_violin}}
+  geom_pirate()
 
-\code{\link{geom_col}}
+ggplot(mpg, aes(x = class, y = displ)) +
+  geom_pirate(aes(colour = class, fill = class))
 }

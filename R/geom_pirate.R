@@ -71,37 +71,58 @@ GeomViolinBkg <- ggproto(
 #' (\url{https://cran.r-project.org/web/packages/yarrr/vignettes/pirateplot.html})
 #' is a way of displaying data where a continuous dependent variable is a
 #' function of a categorical independent variable, in a more informative way
-#' than the traditional barplot. \code{geom_pirate} plots the raw data as
-#' points, along with layers showing descriptive statistics -- horizontal line
-#' segments indicating the mean and violin plots indicating density.
+#' than the traditional barplot. \code{geom_pirate} plots the raw data as points
+#' (using \link[ggplot2]{geom_jitter}), along with layers showing descriptive
+#' statistics -- horizontal lines indicating means (using
+#' \link[ggplot2]{geom_crossbar}), bars indicating means (using
+#' \link[ggplot2]{geom_col}) and violins indicating the density (using
+#' \link[ggplot2]{geom_violin}).
 #'
 #' @export
 #'
-#' @seealso \code{\link{geom_violin}}
-#' @seealso \code{\link{geom_col}}
-#' @inheritParams ggplot2::layer
-#' @inheritParams ggplot2::geom_col
 #' @inheritParams ggplot2::geom_violin
-#' @inheritParams ggplot2::geom_crossbar
-#' @inheritParams ggplot2::geom_point
+#' @param points logical indicating whether to show points
+#' @param bars logical indicating whether to show mean bars
+#' @param lines logical indicating whether to show mean lines
+#' @param violins logical indicating whether to show violins
+#' @param point_width Amount of horizontal jitter added to the locations of the
+#'   points. Defaults to 10\% of the resolution of the data.
+#' @param bar_width Width of mean bars. Defaults to 90\% of the resolution of
+#'   the data.
+#' @param line_width Width of mean lines. Defaults to 90\% of the resolution of
+#'   the data.
+#' @param violin_width Width of violins. Defaults to 80\% of the resolution of
+#'   the data.
+#' @param fatten A multiplicative factor used to increase the size of the mean
+#'   lines.
 #'
 #' @examples
+#' ggplot(mpg, aes(x = class, y = displ)) +
+#'   geom_pirate()
+#'
 #' ggplot(mpg, aes(x = class, y = displ)) +
 #'   geom_pirate(aes(colour = class, fill = class))
 geom_pirate <- function(mapping = NULL, data = NULL,
                         ...,
-                        trim = TRUE,      # violin
-                        scale = "area",   # violin
-                        fatten = 2.5,     # crossbar
-                        width = 0.9,      # crossbar/col/point
+                        points = TRUE,
+                        bars = TRUE,
+                        lines = TRUE,
+                        violins = TRUE,
+                        point_width = 0.1,
+                        bar_width = 0.9,
+                        line_width = 0.9,
+                        violin_width = 0.8,
+                        trim = TRUE,         # geom_violin
+                        scale = "area",      # geom_violin
+                        fatten = 2.5,        # geom_crossbar
                         na.rm = FALSE,
                         show.legend = NA,
                         inherit.aes = TRUE) {
 
-  list(
+  layers <- c()
 
-    # bars
-    layer(
+  if (bars) {
+    bars_layer <- layer(
       data = data,
       mapping = mapping,
       stat = "identity",
@@ -110,14 +131,16 @@ geom_pirate <- function(mapping = NULL, data = NULL,
       show.legend = show.legend,
       inherit.aes = inherit.aes,
       params = list(
-        width = width,
+        width = bar_width,
         na.rm = na.rm,
         ...
       )
-    ),
+    )
+    layers <- c(layers, bars_layer)
+  }
 
-    # density
-    layer(
+  if (violins) {
+    violin_layer <- layer(
       data = data,
       mapping = mapping,
       stat = "ydensity",
@@ -126,16 +149,18 @@ geom_pirate <- function(mapping = NULL, data = NULL,
       show.legend = FALSE,
       inherit.aes = inherit.aes,
       params = list(
-        width = width * 0.9,
+        width = violin_width,
         trim = trim,
         scale = scale,
         na.rm = na.rm,
         ...
       )
-    ),
+    )
+    layers <- c(layers, violin_layer)
+  }
 
-    # means
-    layer(
+  if (lines) {
+    lines_layer <- layer(
       data = data,
       mapping = mapping,
       stat = "identity",
@@ -144,20 +169,22 @@ geom_pirate <- function(mapping = NULL, data = NULL,
       show.legend = FALSE,
       inherit.aes = inherit.aes,
       params = list(
-        width = width,
+        width = line_width,
         fatten = fatten,
         na.rm = na.rm,
         ...
       )
-    ),
+    )
+    layers <- c(layers, lines_layer)
+  }
 
-    # points
-    layer(
+  if (points) {
+    points_layer <- layer(
       data = data,
       mapping = mapping,
       stat = "identity",
       geom = GeomPointHollow,
-      position = position_jitter(width = width * 0.1, height = 0),
+      position = position_jitter(width = point_width, height = 0),
       show.legend = FALSE,
       inherit.aes = inherit.aes,
       params = list(
@@ -165,5 +192,9 @@ geom_pirate <- function(mapping = NULL, data = NULL,
         ...
       )
     )
-  )
+    layers <- c(layers, points_layer)
+  }
+
+  return(layers)
+
 }
