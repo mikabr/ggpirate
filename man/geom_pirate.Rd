@@ -5,10 +5,10 @@
 \title{Pirate plots}
 \usage{
 geom_pirate(mapping = NULL, data = NULL, ..., points = TRUE,
-  bars = TRUE, lines = TRUE, violins = TRUE, point_width = 0.1,
-  bar_width = 0.9, line_width = 0.9, violin_width = 0.8, trim = TRUE,
-  scale = "area", fatten = 2.5, na.rm = FALSE, show.legend = NA,
-  inherit.aes = TRUE)
+  bars = TRUE, lines = TRUE, cis = TRUE, violins = TRUE,
+  point_width = 0.1, bar_width = 0.9, line_width = 0.9, ci_width = 0.8,
+  violin_width = 0.7, trim = TRUE, scale = "area", fatten = 2.5,
+  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by \code{\link{aes}} or
@@ -41,6 +41,8 @@ to the paired geom/stat.}
 
 \item{lines}{logical indicating whether to show mean lines}
 
+\item{cis}{logical indicating whether to show confidence intervals boxes}
+
 \item{violins}{logical indicating whether to show violins}
 
 \item{point_width}{Amount of horizontal jitter added to the locations of the
@@ -52,7 +54,10 @@ the data.}
 \item{line_width}{Width of mean lines. Defaults to 90\% of the resolution of
 the data.}
 
-\item{violin_width}{Width of violins. Defaults to 80\% of the resolution of
+\item{ci_width}{Width of confidence interval boxes. Defaults to 80\% of the
+resolution of the data.}
+
+\item{violin_width}{Width of violins. Defaults to 70\% of the resolution of
 the data.}
 
 \item{trim}{If \code{TRUE} (default), trim the tails of the violins
@@ -68,9 +73,9 @@ lines.}
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
 
-\item{show.legend}{logical. Should this layer be included in the legends?
-\code{NA}, the default, includes if any aesthetics are mapped.
-\code{FALSE} never includes, and \code{TRUE} always includes.}
+\item{show.legend}{logical indicating whether this layer be included in the
+legends? NA includes if any aesthetics are mapped. FALSE (the default)
+never includes, and TRUE always includes.}
 
 \item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
 rather than combining with them. This is most useful for helper functions
@@ -84,10 +89,11 @@ is a way of displaying data where a continuous dependent variable is a
 function of a categorical independent variable, in a more informative way
 than the traditional barplot. \code{geom_pirate} plots the raw data as points
 (using \link[ggplot2]{geom_jitter}), along with layers showing descriptive
-statistics -- horizontal lines indicating means (using
-\link[ggplot2]{geom_crossbar}), bars indicating means (using
-\link[ggplot2]{geom_col}) and violins indicating the density (using
-\link[ggplot2]{geom_violin}).
+and inferential statistics -- bars indicating means (using
+\link[ggplot2]{geom_col}), horizontal line indicating means (using
+\link[ggplot2]{geom_crossbar}), boxes indicating 95\% confidence intervals
+assuming a normal sampling distribution (using \link[ggplot2]{geom_rect}),
+and violins indicating the density (using \link[ggplot2]{geom_violin}).
 }
 \examples{
 ggplot(mpg, aes(x = class, y = displ)) +

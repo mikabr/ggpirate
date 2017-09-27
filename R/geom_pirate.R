@@ -30,6 +30,28 @@ GeomMeanLine <- ggproto(
   required_aes = c("x", "y")
 )
 
+GeomCI <- ggproto(
+  "GeomCI", GeomTile,
+
+  setup_data = function(data, params) {
+    data_entries <- data %>%
+      dplyr::mutate(fill = NULL) %>%
+      dplyr::select(-y) %>%
+      dplyr::distinct()
+    data_summary <- data %>%
+      dplyr::group_by(group) %>%
+      dplyr::summarise(mean_y = mean(y),
+                       sem_y = sd(y) / sqrt(n())) %>%
+      dplyr::mutate(y = mean_y, height = sem_y * 1.96 * 2,
+                    width = params$width) %>%
+      dplyr::left_join(data_entries, by = "group")
+    GeomTile$setup_data(data_summary, params)
+  },
+
+  default_aes = modify_aes(GeomTile$default_aes,
+                           aes(alpha = 0.5, fill = "white", size = 0.5))
+)
+
 GeomMeanBar <- ggproto(
   "GeomMeanBar", GeomCol,
 
@@ -45,11 +67,6 @@ GeomMeanBar <- ggproto(
       dplyr::left_join(data_entries, by = "group")
     GeomCol$setup_data(data_summary, params)
   },
-
-  # draw_key = function(data, params, size) {
-  #   data <- data %>% dplyr::mutate(alpha = 1)
-  #   GeomCol$draw_key(data, params, size)
-  # },
 
   default_aes = modify_aes(GeomCol$default_aes, aes(alpha = 0.3))
 
@@ -73,10 +90,11 @@ GeomViolinBkg <- ggproto(
 #' function of a categorical independent variable, in a more informative way
 #' than the traditional barplot. \code{geom_pirate} plots the raw data as points
 #' (using \link[ggplot2]{geom_jitter}), along with layers showing descriptive
-#' statistics -- horizontal lines indicating means (using
-#' \link[ggplot2]{geom_crossbar}), bars indicating means (using
-#' \link[ggplot2]{geom_col}) and violins indicating the density (using
-#' \link[ggplot2]{geom_violin}).
+#' and inferential statistics -- bars indicating means (using
+#' \link[ggplot2]{geom_col}), horizontal line indicating means (using
+#' \link[ggplot2]{geom_crossbar}), boxes indicating 95\% confidence intervals
+#' assuming a normal sampling distribution (using \link[ggplot2]{geom_rect}),
+#' and violins indicating the density (using \link[ggplot2]{geom_violin}).
 #'
 #' @export
 #'
@@ -84,6 +102,7 @@ GeomViolinBkg <- ggproto(
 #' @param points logical indicating whether to show points
 #' @param bars logical indicating whether to show mean bars
 #' @param lines logical indicating whether to show mean lines
+#' @param cis logical indicating whether to show confidence intervals boxes
 #' @param violins logical indicating whether to show violins
 #' @param point_width Amount of horizontal jitter added to the locations of the
 #'   points. Defaults to 10\% of the resolution of the data.
@@ -91,10 +110,15 @@ GeomViolinBkg <- ggproto(
 #'   the data.
 #' @param line_width Width of mean lines. Defaults to 90\% of the resolution of
 #'   the data.
-#' @param violin_width Width of violins. Defaults to 80\% of the resolution of
+#' @param ci_width Width of confidence interval boxes. Defaults to 80\% of the
+#'   resolution of the data.
+#' @param violin_width Width of violins. Defaults to 70\% of the resolution of
 #'   the data.
 #' @param fatten A multiplicative factor used to increase the size of the mean
 #'   lines.
+#' @param show.legend logical indicating whether this layer be included in the
+#'   legends? NA includes if any aesthetics are mapped. FALSE (the default)
+#'   never includes, and TRUE always includes.
 #'
 #' @examples
 #' ggplot(mpg, aes(x = class, y = displ)) +
@@ -107,16 +131,18 @@ geom_pirate <- function(mapping = NULL, data = NULL,
                         points = TRUE,
                         bars = TRUE,
                         lines = TRUE,
+                        cis = TRUE,
                         violins = TRUE,
                         point_width = 0.1,
                         bar_width = 0.9,
                         line_width = 0.9,
-                        violin_width = 0.8,
+                        ci_width = 0.8,
+                        violin_width = 0.7,
                         trim = TRUE,         # geom_violin
                         scale = "area",      # geom_violin
                         fatten = 2.5,        # geom_crossbar
                         na.rm = FALSE,
-                        show.legend = NA,
+                        show.legend = FALSE,
                         inherit.aes = TRUE) {
 
   layers <- c()
@@ -157,6 +183,24 @@ geom_pirate <- function(mapping = NULL, data = NULL,
       )
     )
     layers <- c(layers, violin_layer)
+  }
+
+  if (cis) {
+    cis_layer <- layer(
+      data = data,
+      mapping = mapping,
+      stat = "identity",
+      geom = GeomCI,
+      position = "identity",
+      show.legend = FALSE,
+      inherit.aes = inherit.aes,
+      params = list(
+        width = ci_width,
+        na.rm = na.rm,
+        ...
+      )
+    )
+    layers <- c(layers, cis_layer)
   }
 
   if (lines) {
