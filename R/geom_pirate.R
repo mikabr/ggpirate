@@ -9,7 +9,7 @@ modify_aes <- function(mapping, ...) {
 
 GeomPointHollow <- ggproto(
   "GeomPointHollow", GeomPoint,
-  default_aes = modify_aes(GeomPoint$default_aes, aes(shape = 1))
+  default_aes = modify_aes(GeomPoint$default_aes, aes(shape = 1, size = 1))
 )
 
 GeomMeanLine <- ggproto(
@@ -49,7 +49,8 @@ GeomCI <- ggproto(
   },
 
   default_aes = modify_aes(GeomTile$default_aes,
-                           aes(alpha = 0.5, fill = "white", size = 0.5))
+                           aes(alpha = 0.5, fill = "white", size = 0.5,
+                               colour = "darkgrey"))
 )
 
 GeomMeanBar <- ggproto(
