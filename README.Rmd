@@ -1,0 +1,47 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# ggpirate
+
+A [pirate plot](https://cran.r-project.org/web/packages/yarrr/vignettes/pirateplot.html) is a way of displaying data where a continuous dependent variable is a function of a categorical independent variable, in a more informative way than the traditional barplot. `geom_pirate()` plots the raw data as points (using `ggplot2::geom_jitter()`), along with layers showing descriptive and inferential statistics -- bars indicating means (using `ggplot2::geom_col()`), horizontal line indicating means (using `ggplot2::geom_crossbar()`), boxes indicating 95\% confidence intervals assuming a normal sampling distribution (using `ggplot2::geom_rect()`), and violins indicating the density (using `ggplot2::geom_violin()`).
+
+
+## Installation
+
+You can install ggpirate from github with:
+
+```{r gh-installation, eval = FALSE}
+# install.packages("devtools")
+devtools::install_github("mikabr/ggpirate")
+```
+
+
+# Examples
+
+```{r setup, message = FALSE}
+library(ggpirate)
+theme_set(theme_bw())
+```
+
+Colour pirate plot:
+```{r colour}
+ggplot(mpg, aes(x = class, y = displ)) +
+  geom_pirate(aes(colour = class, fill = class))
+```
+
+Black and white pirate plot:
+```{r bw}
+ggplot(mpg, aes(x = class, y = displ)) +
+  geom_pirate()
+```
