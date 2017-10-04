@@ -6,9 +6,11 @@
 \usage{
 geom_pirate(mapping = NULL, data = NULL, ..., points = TRUE,
   bars = TRUE, lines = TRUE, cis = TRUE, violins = TRUE,
-  point_width = 0.1, bar_width = 0.9, line_width = 0.9, ci_width = 0.8,
-  violin_width = 0.7, trim = TRUE, scale = "area", fatten = 2.5,
-  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
+  width_points = 0.1, width_bars = 0.9, width_lines = 0.9,
+  width_cis = 0.8, width_violins = 0.7, alpha_points = 1,
+  alpha_bars = 0.3, alpha_cis = 0.5, alpha_violins = 0, trim = TRUE,
+  scale = "area", fatten = 2.5, na.rm = FALSE, show.legend = FALSE,
+  inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by \code{\link{aes}} or
@@ -45,20 +47,28 @@ to the paired geom/stat.}
 
 \item{violins}{logical indicating whether to show violins}
 
-\item{point_width}{Amount of horizontal jitter added to the locations of the
+\item{width_points}{Amount of horizontal jitter added to the locations of the
 points. Defaults to 10\% of the resolution of the data.}
 
-\item{bar_width}{Width of mean bars. Defaults to 90\% of the resolution of
+\item{width_bars}{Width of mean bars. Defaults to 90\% of the resolution of
 the data.}
 
-\item{line_width}{Width of mean lines. Defaults to 90\% of the resolution of
+\item{width_lines}{Width of mean lines. Defaults to 90\% of the resolution of
 the data.}
 
-\item{ci_width}{Width of confidence interval boxes. Defaults to 80\% of the
+\item{width_cis}{Width of confidence interval boxes. Defaults to 80\% of the
 resolution of the data.}
 
-\item{violin_width}{Width of violins. Defaults to 70\% of the resolution of
+\item{width_violins}{Width of violins. Defaults to 70\% of the resolution of
 the data.}
+
+\item{alpha_points}{Opacity of the points. Defaults to 1 (not transparent at all).}
+
+\item{alpha_bars}{Opacity of the mean bars. Defaults to 0.3.}
+
+\item{alpha_cis}{Opacity of the confidence interval boxes. Defaults to 0.5.}
+
+\item{alpha_violins}{Opacity of the violins. Defaults to 0 (completely transparent).}
 
 \item{trim}{If \code{TRUE} (default), trim the tails of the violins
 to the range of the data. If \code{FALSE}, don't trim the tails.}
