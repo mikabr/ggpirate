@@ -10,10 +10,10 @@ GeomMeanLine <- ggproto(
       dplyr::select(-y) %>%
       dplyr::distinct()
     data_summary <- data %>%
-      dplyr::group_by(group) %>%
-      dplyr::summarise(y = mean(y)) %>%
+      dplyr::group_by(PANEL, group) %>%
+      dplyr::summarise(y = mean(y, na.rm = TRUE)) %>%
       dplyr::mutate(ymin = y, ymax = y, width = params$width) %>%
-      dplyr::left_join(data_entries, by = "group")
+      dplyr::left_join(data_entries, by = c("PANEL", "group"))
     GeomCrossbar$setup_data(data_summary, params)
   },
 
@@ -29,12 +29,12 @@ GeomCI <- ggproto(
       dplyr::select(-y) %>%
       dplyr::distinct()
     data_summary <- data %>%
-      dplyr::group_by(group) %>%
-      dplyr::summarise(mean_y = mean(y),
-                       sem_y = sd(y) / sqrt(n())) %>%
+      dplyr::group_by(PANEL, group) %>%
+      dplyr::summarise(mean_y = mean(y, na.rm = TRUE),
+                       sem_y = sd(y, na.rm = TRUE) / sqrt(n())) %>%
       dplyr::mutate(y = mean_y, height = sem_y * 1.96 * 2,
                     width = params$width) %>%
-      dplyr::left_join(data_entries, by = "group")
+      dplyr::left_join(data_entries, by = c("PANEL", "group"))
     GeomTile$setup_data(data_summary, params)
   }
 )
@@ -48,10 +48,10 @@ GeomMeanBar <- ggproto(
       dplyr::select(-y) %>%
       dplyr::distinct()
     data_summary <- data %>%
-      dplyr::group_by(group) %>%
-      dplyr::summarise(y = mean(y)) %>%
+      dplyr::group_by(PANEL, group) %>%
+      dplyr::summarise(y = mean(y, na.rm = TRUE)) %>%
       dplyr::mutate(ymin = y, ymax = y, width = params$width) %>%
-      dplyr::left_join(data_entries, by = "group")
+      dplyr::left_join(data_entries, by = c("PANEL", "group"))
     GeomCol$setup_data(data_summary, params)
   }
 )

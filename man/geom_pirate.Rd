@@ -62,13 +62,15 @@ resolution of the data.}
 \item{width_violins}{Width of violins. Defaults to 70\% of the resolution of
 the data.}
 
-\item{alpha_points}{Opacity of the points. Defaults to 1 (not transparent at all).}
+\item{alpha_points}{Opacity of the points. Defaults to 1 (not transparent at
+all).}
 
 \item{alpha_bars}{Opacity of the mean bars. Defaults to 0.3.}
 
 \item{alpha_cis}{Opacity of the confidence interval boxes. Defaults to 0.5.}
 
-\item{alpha_violins}{Opacity of the violins. Defaults to 0 (completely transparent).}
+\item{alpha_violins}{Opacity of the violins. Defaults to 0 (completely
+transparent).}
 
 \item{trim}{If \code{TRUE} (default), trim the tails of the violins
 to the range of the data. If \code{FALSE}, don't trim the tails.}
