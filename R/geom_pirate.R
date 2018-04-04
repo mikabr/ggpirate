@@ -2,59 +2,40 @@
 #' @importFrom dplyr "%>%"
 NULL
 
-GeomMeanLine <- ggproto(
-  "GeomMeanLine", GeomCrossbar,
+StatCI <- ggproto(
+  "StatCI", Stat,
 
-  setup_data = function(data, params) {
-    data_entries <- data %>%
-      dplyr::select(-y) %>%
-      dplyr::distinct()
-    data_summary <- data %>%
-      dplyr::group_by(PANEL, group) %>%
-      dplyr::summarise(y = mean(y, na.rm = TRUE)) %>%
-      dplyr::mutate(ymin = y, ymax = y, width = params$width) %>%
-      dplyr::left_join(data_entries, by = c("PANEL", "group"))
-    GeomCrossbar$setup_data(data_summary, params)
+  compute_group = function(data, scales) {
+    data %>%
+      dplyr::summarise(mean_y = mean(y, na.rm = TRUE),
+                       sem_y = sd(y, na.rm = TRUE) / sqrt(n())) %>%
+      dplyr::mutate(y = mean_y, height = sem_y * 1.96 * 2)
+  },
+
+  finish_layer = function(data, params) {
+    data %>% dplyr::mutate(colour = "darkgrey")
   },
 
   required_aes = c("x", "y")
 )
 
-GeomCI <- ggproto(
-  "GeomCI", GeomTile,
+StatYdensityPirate <- ggproto(
+  "StatYdensityPirate", StatYdensity,
 
-  setup_data = function(data, params) {
-    data_entries <- data %>%
-      dplyr::mutate(fill = NULL) %>%
-      dplyr::select(-y) %>%
-      dplyr::distinct()
-    data_summary <- data %>%
-      dplyr::group_by(PANEL, group) %>%
-      dplyr::summarise(mean_y = mean(y, na.rm = TRUE),
-                       sem_y = sd(y, na.rm = TRUE) / sqrt(n())) %>%
-      dplyr::mutate(y = mean_y, height = sem_y * 1.96 * 2,
-                    width = params$width) %>%
-      dplyr::left_join(data_entries, by = c("PANEL", "group"))
-    GeomTile$setup_data(data_summary, params)
+  finish_layer = function(data, params) {
+    data %>% dplyr::mutate(colour = "darkgrey")
   }
 )
 
-GeomMeanBar <- ggproto(
-  "GeomMeanBar", GeomCol,
-
-  setup_data = function(data, params) {
-    data_entries <- data %>%
-      dplyr::mutate(colour = NULL) %>%
-      dplyr::select(-y) %>%
-      dplyr::distinct()
-    data_summary <- data %>%
-      dplyr::group_by(PANEL, group) %>%
-      dplyr::summarise(y = mean(y, na.rm = TRUE)) %>%
-      dplyr::mutate(ymin = y, ymax = y, width = params$width) %>%
-      dplyr::left_join(data_entries, by = c("PANEL", "group"))
-    GeomCol$setup_data(data_summary, params)
-  }
+GeomCrossbarPirate <- ggproto(
+  "GeomCrossbarPirate", GeomCrossbar,
+  draw_key = draw_key_path
 )
+
+add_modify_aes <- function(mapping, ...) {
+  if (is.null(mapping)) return(NULL)
+  utils::modifyList(mapping, ...)
+}
 
 
 #' Pirate plots
@@ -106,7 +87,7 @@ GeomMeanBar <- ggproto(
 #'   geom_pirate()
 #'
 #' ggplot(mpg, aes(x = class, y = displ)) +
-#'   geom_pirate(aes(colour = class, fill = class))
+#'   geom_pirate(aes(colour = class))
 geom_pirate <- function(mapping = NULL, data = NULL,
                         ...,
                         points = TRUE,
@@ -132,16 +113,23 @@ geom_pirate <- function(mapping = NULL, data = NULL,
 
   layers <- c()
 
+  if ("colour" %in% names(mapping)) {
+    group <- as.name(mapping$colour)
+  } else {
+    group <- NULL
+  }
+
   if (bars) {
     bars_layer <- layer(
       data = data,
-      mapping = mapping,
-      stat = "identity",
-      geom = GeomMeanBar,
-      position = "stack",
+      mapping = add_modify_aes(mapping, aes_(colour = NULL, fill = group)),
+      stat = "summary",
+      geom = GeomCol,
+      position = position_dodge(width = 0.9),
       show.legend = show.legend,
       inherit.aes = inherit.aes,
       params = list(
+        fun.y = "mean",
         width = width_bars,
         alpha = alpha_bars,
         na.rm = na.rm,
@@ -155,15 +143,14 @@ geom_pirate <- function(mapping = NULL, data = NULL,
     violin_layer <- layer(
       data = data,
       mapping = mapping,
-      stat = "ydensity",
+      stat = StatYdensityPirate,
       geom = GeomViolin,
-      position = "dodge",
+      position = position_dodge(width = 0.9),
       show.legend = FALSE,
       inherit.aes = inherit.aes,
       params = list(
         width = width_violins,
         alpha = alpha_violins,
-        colour = "darkgrey",
         fill = "white",
         trim = trim,
         scale = scale,
@@ -178,15 +165,14 @@ geom_pirate <- function(mapping = NULL, data = NULL,
     cis_layer <- layer(
       data = data,
       mapping = mapping,
-      stat = "identity",
-      geom = GeomCI,
-      position = "identity",
+      stat = StatCI,
+      geom = "tile",
+      position = position_dodge(width = 0.9),
       show.legend = FALSE,
       inherit.aes = inherit.aes,
       params = list(
         width = width_cis,
         alpha = alpha_cis,
-        colour = "darkgrey",
         fill = "white",
         size = 0.5,
         na.rm = na.rm,
@@ -200,12 +186,15 @@ geom_pirate <- function(mapping = NULL, data = NULL,
     lines_layer <- layer(
       data = data,
       mapping = mapping,
-      stat = "identity",
-      geom = GeomMeanLine,
-      position = "identity",
-      show.legend = FALSE,
+      stat = "summary",
+      geom = GeomCrossbarPirate,
+      position = position_dodge(width = 0.9),
+      show.legend = show.legend,
       inherit.aes = inherit.aes,
       params = list(
+        fun.y = "mean",
+        fun.ymax = "mean",
+        fun.ymin = "mean",
         width = width_lines,
         fatten = fatten,
         na.rm = na.rm,
@@ -215,14 +204,21 @@ geom_pirate <- function(mapping = NULL, data = NULL,
     layers <- c(layers, lines_layer)
   }
 
+  if ("colour" %in% names(mapping)) {
+    points_position <- position_jitterdodge(jitter.width = width_points,
+                                            jitter.height = 0,
+                                            dodge.width = 0.9)
+  } else {
+    points_position <- position_jitter(width = width_points, height = 0)
+  }
   if (points) {
     points_layer <- layer(
       data = data,
       mapping = mapping,
       stat = "identity",
       geom = GeomPoint,
-      position = position_jitter(width = width_points, height = 0),
-      show.legend = FALSE,
+      position = points_position,
+      show.legend = show.legend,
       inherit.aes = inherit.aes,
       params = list(
         alpha = alpha_points,

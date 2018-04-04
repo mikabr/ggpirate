@@ -112,5 +112,5 @@ ggplot(mpg, aes(x = class, y = displ)) +
   geom_pirate()
 
 ggplot(mpg, aes(x = class, y = displ)) +
-  geom_pirate(aes(colour = class, fill = class))
+  geom_pirate(aes(colour = class))
 }
