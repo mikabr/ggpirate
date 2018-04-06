@@ -32,9 +32,6 @@ ggplot(mpg, aes(x = class, y = cty)) +
 
 ![](README-colour-1.png)
 
-    #> $na.rm
-    #> [1] FALSE
-
 Each of the layers can be turned off, e.g. for just means and confidence intervals:
 
 ``` r
@@ -43,9 +40,6 @@ ggplot(mpg, aes(x = class, y = cty)) +
 ```
 
 ![](README-layers-1.png)
-
-    #> $na.rm
-    #> [1] FALSE
 
 Colour can be mapped to a different variable than the x axis, resulting in dodged subgroups:
 
@@ -57,9 +51,6 @@ ggplot(mpg2, aes(x = class, y = cty)) +
 ```
 
 ![](README-dodge-1.png)
-
-    #> $na.rm
-    #> [1] FALSE
 
 And it plays well with facetting:
 
@@ -73,9 +64,6 @@ ggplot(mpg_gather, aes(x = class, y = mileage)) +
 
 ![](README-facets-1.png)
 
-    #> $na.rm
-    #> [1] FALSE
-
 Finally, the parameters passed to any of the layers can be adjusted, e.g.:
 
 ``` r
@@ -86,6 +74,3 @@ ggplot(mpg, aes(x = class, y = cty)) +
 ```
 
 ![](README-unnamed-chunk-2-1.png)
-
-    #> $na.rm
-    #> [1] FALSE
