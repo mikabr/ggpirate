@@ -6,10 +6,11 @@
 \usage{
 geom_pirate(mapping = NULL, data = NULL, ..., points = TRUE,
   bars = TRUE, lines = TRUE, cis = TRUE, violins = TRUE,
-  width_points = 0.1, width_bars = 0.9, width_lines = 0.9,
-  width_cis = 0.8, width_violins = 0.7, alpha_points = 1,
-  alpha_bars = 0.3, alpha_cis = 0.5, alpha_violins = 0, trim = TRUE,
-  scale = "area", fatten = 2.5, na.rm = FALSE, show.legend = FALSE,
+  points_params = list(shape = 1, size = 1), bars_params = list(alpha = 0.3,
+  width = 0.9), lines_params = list(size = 0.5, width = 0.9),
+  cis_params = list(fill = "white", size = 0.5, alpha = 0.5, width = 0.8),
+  violins_params = list(fill = "white", size = 0.5, alpha = 0, width = 0.7),
+  jitter_width = 0.2, na.rm = FALSE, show.legend = FALSE,
   inherit.aes = TRUE)
 }
 \arguments{
@@ -43,51 +44,28 @@ to the paired geom/stat.}
 
 \item{lines}{logical indicating whether to show mean lines}
 
-\item{cis}{logical indicating whether to show confidence intervals boxes}
+\item{cis}{logical indicating whether to show 95\% confidence intervals boxes}
 
 \item{violins}{logical indicating whether to show violins}
 
-\item{width_points}{Amount of horizontal jitter added to the locations of the
-points. Defaults to 10\% of the resolution of the data.}
+\item{points_params}{list of parameters to pass to points layer}
 
-\item{width_bars}{Width of mean bars. Defaults to 90\% of the resolution of
-the data.}
+\item{bars_params}{list of parameters to pass to bars layer}
 
-\item{width_lines}{Width of mean lines. Defaults to 90\% of the resolution of
-the data.}
+\item{lines_params}{list of parameters to pass to lines layer}
 
-\item{width_cis}{Width of confidence interval boxes. Defaults to 80\% of the
-resolution of the data.}
+\item{cis_params}{list of parameters to pass to CIs layer}
 
-\item{width_violins}{Width of violins. Defaults to 70\% of the resolution of
-the data.}
+\item{violins_params}{list of parameters to pass to violins layer}
 
-\item{alpha_points}{Opacity of the points. Defaults to 1 (not transparent at
-all).}
-
-\item{alpha_bars}{Opacity of the mean bars. Defaults to 0.3.}
-
-\item{alpha_cis}{Opacity of the confidence interval boxes. Defaults to 0.5.}
-
-\item{alpha_violins}{Opacity of the violins. Defaults to 0 (completely
-transparent).}
-
-\item{trim}{If \code{TRUE} (default), trim the tails of the violins
-to the range of the data. If \code{FALSE}, don't trim the tails.}
-
-\item{scale}{if "area" (default), all violins have the same area (before trimming
-the tails). If "count", areas are scaled proportionally to the number of
-observations. If "width", all violins have the same maximum width.}
-
-\item{fatten}{A multiplicative factor used to increase the size of the mean
-lines.}
+\item{jitter_width}{amount of horizontal jitter added to the locations of the
+points (defaults to 20\% of the resolution of the data)}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}
 
 \item{show.legend}{logical indicating whether this layer be included in the
-legends? NA includes if any aesthetics are mapped. FALSE (the default)
-never includes, and TRUE always includes.}
+legends (defaults to FALSE)}
 
 \item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
 rather than combining with them. This is most useful for helper functions
@@ -104,13 +82,10 @@ than the traditional barplot. \code{geom_pirate} plots the raw data as points
 and inferential statistics -- bars indicating means (using
 \link[ggplot2]{geom_col}), horizontal line indicating means (using
 \link[ggplot2]{geom_crossbar}), boxes indicating 95\% confidence intervals
-assuming a normal sampling distribution (using \link[ggplot2]{geom_rect}),
+assuming a normal sampling distribution (using \link[ggplot2]{geom_tile}),
 and violins indicating the density (using \link[ggplot2]{geom_violin}).
 }
 \examples{
-ggplot(mpg, aes(x = class, y = displ)) +
-  geom_pirate()
-
-ggplot(mpg, aes(x = class, y = displ)) +
+ggplot(mpg, aes(x = class, y = cty)) +
   geom_pirate(aes(colour = class))
 }
