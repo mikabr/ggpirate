@@ -2,6 +2,15 @@
 #' @importFrom dplyr "%>%"
 NULL
 
+GeomColPirate <- ggproto(
+  "GeomColPirate", GeomCol,
+
+  setup_data = function(data, params) {
+    if ("colour" %in% colnames(data)) data$colour <- NULL
+    GeomCol$setup_data(data, params)
+  }
+)
+
 StatCI <- ggproto(
   "StatCI", Stat,
 
@@ -30,11 +39,6 @@ GeomCrossbarPirate <- ggproto(
   "GeomCrossbarPirate", GeomCrossbar,
   draw_key = draw_key_path
 )
-
-update_aes <- function(mapping, ...) {
-  if (is.null(mapping)) return(NULL)
-  utils::modifyList(mapping, ...)
-}
 
 update_default_arg <- function(arg_name, arg_value) {
   default_vals <- as.list(formals(geom_pirate)[[arg_name]])[-1]
@@ -97,19 +101,13 @@ geom_pirate <- function(mapping = NULL, data = NULL,
 
   layers <- c()
 
-  if ("colour" %in% names(mapping)) {
-    group <- as.name(mapping$colour)
-  } else {
-    group <- NULL
-  }
-
   if (bars) {
     bars_params <- update_default_arg("bars_params", bars_params)
     bars_layer <- layer(
       data = data,
-      mapping = update_aes(mapping, aes_(colour = NULL, fill = group)),
+      mapping = mapping,
       stat = "summary",
-      geom = GeomCol,
+      geom = GeomColPirate,
       position = position_dodge(width = 0.9),
       show.legend = show.legend,
       inherit.aes = inherit.aes,
@@ -191,9 +189,6 @@ geom_pirate <- function(mapping = NULL, data = NULL,
     layers <- c(layers, lines_layer)
   }
 
-  points_position <- position_jitterdodge(jitter.width = jitter_width,
-                                          jitter.height = 0,
-                                          dodge.width = 0.9)
   if (points) {
     points_params <- update_default_arg("points_params", points_params)
     points_layer <- layer(
@@ -201,7 +196,9 @@ geom_pirate <- function(mapping = NULL, data = NULL,
       mapping = mapping,
       stat = "identity",
       geom = GeomPoint,
-      position = points_position,
+      position = position_jitterdodge(jitter.width = jitter_width,
+                                      jitter.height = 0,
+                                      dodge.width = 0.9),
       show.legend = show.legend,
       inherit.aes = inherit.aes,
       params = purrr::flatten(list(

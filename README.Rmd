@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo = FALSE}
+```{r knitr, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -37,13 +37,14 @@ theme_set(theme_bw())
 Colour pirate plot:
 ```{r colour}
 ggplot(mpg, aes(x = class, y = cty)) +
-  geom_pirate(aes(colour = class))
+  geom_pirate(aes(colour = class, fill = class))
 ```
 
 Each of the layers can be turned off, e.g. for just means and confidence intervals:
 ```{r layers}
 ggplot(mpg, aes(x = class, y = cty)) +
-  geom_pirate(aes(colour = class), points = FALSE, bars = FALSE, violins = FALSE)
+  geom_pirate(aes(colour = class),
+              points = FALSE, bars = FALSE, violins = FALSE)
 ```
 
 Colour can be mapped to a different variable than the x axis, resulting in dodged subgroups:
@@ -51,23 +52,22 @@ Colour can be mapped to a different variable than the x axis, resulting in dodge
 mpg2 <- dplyr::mutate(mpg, drv = factor(drv))
 
 ggplot(mpg2, aes(x = class, y = cty)) +
-  geom_pirate(aes(colour = drv), show.legend = TRUE)
+  geom_pirate(aes(colour = drv, fill = drv), show.legend = TRUE)
 ```
 
 And it plays well with facetting:
-```{r facets}
+```{r facets, fig.width=8}
 mpg_gather <- tidyr::gather(mpg, type, mileage, cty, hwy)
 
 ggplot(mpg_gather, aes(x = class, y = mileage)) +
   facet_wrap(~type) +
-  geom_pirate(aes(colour = class))
+  geom_pirate(aes(colour = class, fill = class))
 ```
 
 Finally, the parameters passed to any of the layers can be adjusted, e.g.:
-```{r}
+```{r params}
 ggplot(mpg, aes(x = class, y = cty)) +
   geom_pirate(aes(colour = class), bars = FALSE,
               points_params = list(shape = 19, alpha = 0.2),
               lines_params = list(size = 0.8))
 ```
-

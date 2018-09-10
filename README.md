@@ -27,7 +27,7 @@ Colour pirate plot:
 
 ``` r
 ggplot(mpg, aes(x = class, y = cty)) +
-  geom_pirate(aes(colour = class))
+  geom_pirate(aes(colour = class, fill = class))
 ```
 
 ![](README-colour-1.png)
@@ -36,7 +36,8 @@ Each of the layers can be turned off, e.g. for just means and confidence interva
 
 ``` r
 ggplot(mpg, aes(x = class, y = cty)) +
-  geom_pirate(aes(colour = class), points = FALSE, bars = FALSE, violins = FALSE)
+  geom_pirate(aes(colour = class),
+              points = FALSE, bars = FALSE, violins = FALSE)
 ```
 
 ![](README-layers-1.png)
@@ -47,7 +48,7 @@ Colour can be mapped to a different variable than the x axis, resulting in dodge
 mpg2 <- dplyr::mutate(mpg, drv = factor(drv))
 
 ggplot(mpg2, aes(x = class, y = cty)) +
-  geom_pirate(aes(colour = drv), show.legend = TRUE)
+  geom_pirate(aes(colour = drv, fill = drv), show.legend = TRUE)
 ```
 
 ![](README-dodge-1.png)
@@ -59,7 +60,7 @@ mpg_gather <- tidyr::gather(mpg, type, mileage, cty, hwy)
 
 ggplot(mpg_gather, aes(x = class, y = mileage)) +
   facet_wrap(~type) +
-  geom_pirate(aes(colour = class))
+  geom_pirate(aes(colour = class, fill = class))
 ```
 
 ![](README-facets-1.png)
@@ -73,4 +74,4 @@ ggplot(mpg, aes(x = class, y = cty)) +
               lines_params = list(size = 0.8))
 ```
 
-![](README-unnamed-chunk-2-1.png)
+![](README-params-1.png)
