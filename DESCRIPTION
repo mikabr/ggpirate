@@ -1,20 +1,20 @@
 Package: ggpirate
 Type: Package
 Title: Pirate plotting for ggplot2
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Mika", "Braginsky", email = "mika.br@gmail.com", role = c("aut", "cre"))
   )
 Description: Extends ggplot2 to make it easy to create pirate plots.
 Depends:
-  R (>= 3.4.0),
-  ggplot2 (>= 2.2.1)
+  R (>= 4.0),
+  ggplot2 (>= 3.3.2)
 License: GPL-3
 URL: https://github.com/mikabr/ggpirate
 BugReports: http://github.com/mikabr/ggpirate/issues
 Encoding: UTF-8
 LazyData: true
 Imports:
-  dplyr (>= 0.7.2),
-  purrr (>= 0.2.4)
-RoxygenNote: 6.0.1
+  dplyr (>= 1.0.1),
+  purrr (>= 0.3.4)
+RoxygenNote: 7.1.1

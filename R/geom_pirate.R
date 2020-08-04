@@ -17,7 +17,7 @@ StatCI <- ggproto(
   compute_group = function(data, scales) {
     data %>%
       dplyr::summarise(mean_y = mean(y, na.rm = TRUE),
-                       sem_y = sd(y, na.rm = TRUE) / sqrt(n())) %>%
+                       sem_y = sd(y, na.rm = TRUE) / sqrt(dplyr::n())) %>%
       dplyr::mutate(y = mean_y, height = sem_y * 1.96 * 2)
   },
 
@@ -114,7 +114,7 @@ geom_pirate <- function(mapping = NULL, data = NULL,
       params = purrr::flatten(list(
         bars_params,
         list(
-          fun.y = "mean",
+          fun = "mean",
           na.rm = na.rm,
           ...
         )
@@ -178,9 +178,7 @@ geom_pirate <- function(mapping = NULL, data = NULL,
       params = purrr::flatten(list(
         lines_params,
         list(
-          fun.y = "mean",
-          fun.ymax = "mean",
-          fun.ymin = "mean",
+          fun = "mean",
           na.rm = na.rm,
           ...
         )
